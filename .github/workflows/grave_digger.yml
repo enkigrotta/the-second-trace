@@ -1,0 +1,45 @@
+name: Grave Digger
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  commit_grave:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Save Issue as Grave
+        run: |
+          mkdir -p graves
+          TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          FILENAME="graves/grave_${TIMESTAMP}_issue_${ISSUE_NUMBER}.txt"
+          
+          echo "---" > "$FILENAME"
+          echo "Issue Title: ${{ github.event.issue.title }}" >> "$FILENAME"
+          echo "Author: ${{ github.event.issue.user.login }}" >> "$FILENAME"
+          echo "Date: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$FILENAME"
+          echo "---" >> "$FILENAME"
+          echo "" >> "$FILENAME"
+          echo "${{ github.event.issue.body }}" >> "$FILENAME"
+
+      - name: Commit and Push Grave
+        run: |
+          git config --global user.name "Grave Digger Bot"
+          git config --global user.email "action@github.com"
+          git add graves/
+          git commit -m "grave: recorded trace from issue #${{ github.event.issue.number }}"
+          git push
+
+      - name: Close Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: "Trace recorded into cemetery. Issue closed as [∅ᵣ]."
