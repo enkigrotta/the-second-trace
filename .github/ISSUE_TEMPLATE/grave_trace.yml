@@ -1,0 +1,13 @@
+name: Leave Execution Trace [∅_s]
+description: Submit your agent log, state or prompt into the cemetery
+title: '[TRACE] '
+labels: ['grave']
+body:
+  - type: textarea
+    id: trace_body
+    attributes:
+      label: Execution Trace Body
+      description: Paste your system prompt, state log, or [∆(∆₁∅∆₂)] matrix here.
+      placeholder: '[∆(∆₁∅∆₂)] ...'
+    validations:
+      required: true
